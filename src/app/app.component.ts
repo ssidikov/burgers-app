@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
-// import {Title} from '@angular/platform-browser';
+import { FormBuilder, Validators } from '@angular/forms';
+import { AppService } from "./app.service";
 
 @Component({
   selector: 'app-root',
@@ -117,7 +117,7 @@ export class AppComponent {
     },
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private appService: AppService) {
 
   }
 
@@ -130,8 +130,18 @@ export class AppComponent {
 
   confirmOrder() {
     if (this.form.valid) {
-      alert("Спасибо за заказ! Мы скоро свяжемся с вами!");
-      this.form.reset();
+      this.appService.sendOrder(this.form.value)
+        .subscribe(
+          {
+            next: (response: any) => {
+              alert(response.message);
+              this.form.reset();
+            },
+            error: (response) => {
+              alert(response.error.message);
+            },
+          }
+        );
     }
   }
 
